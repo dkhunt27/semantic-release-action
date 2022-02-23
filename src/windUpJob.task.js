@@ -6,7 +6,7 @@ const outputs = require('./outputs.json');
  * @param result
  * @returns {Promise<void>}
  */
-module.exports = async (result) => {
+module.exports = async result => {
   if (!result) {
     core.debug('No release published.');
     return Promise.resolve();
@@ -19,17 +19,21 @@ module.exports = async (result) => {
     return Promise.resolve();
   }
 
-  core.debug(`Published ${nextRelease.type} release version ${nextRelease.version} containing ${commits.length} commits.`);
+  core.debug(
+    `Published ${nextRelease.type} release version ${nextRelease.version} containing ${commits.length} commits.`
+  );
 
   if (lastRelease.version) {
     core.debug(`The last release was "${lastRelease.version}".`);
   }
 
   for (const release of releases) {
-    core.debug(`The release was published with plugin "${release.pluginName}".`);
+    core.debug(
+      `The release was published with plugin "${release.pluginName}".`
+    );
   }
 
-  const {version, channel, notes} = nextRelease;
+  const {version, channel, notes, gitHead, gitTag} = nextRelease;
   const [major, minor, patch] = version.split(/\.|-|\s/g, 3);
 
   // set outputs
@@ -40,5 +44,9 @@ module.exports = async (result) => {
   core.setOutput(outputs.new_release_patch_version, patch);
   core.setOutput(outputs.new_release_channel, channel);
   core.setOutput(outputs.new_release_notes, notes);
-  core.setOutput(outputs.last_release_version, lastRelease.version)
+  core.setOutput(outputs.new_release_git_head, gitHead);
+  core.setOutput(outputs.new_release_git_tag, gitTag);
+  core.setOutput(outputs.last_release_version, lastRelease.version);
+  core.setOutput(outputs.last_release_git_head, lastRelease.gitHead);
+  core.setOutput(outputs.last_release_git_tag, lastRelease.gitTag);
 };
